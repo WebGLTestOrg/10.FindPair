@@ -1,112 +1,99 @@
 pc.script.createLoadingScreen(function (app) {
     var showSplash = function () {
-        // splash wrapper
         var wrapper = document.createElement('div');
         wrapper.id = 'application-splash-wrapper';
+        wrapper.style.backgroundColor = '#ffffff';
+
         document.body.appendChild(wrapper);
 
-        // splash
         var splash = document.createElement('div');
         splash.id = 'application-splash';
         wrapper.appendChild(splash);
-        splash.style.display = 'none';
 
-        var logo = document.createElement('img');
-        logo.src = ASSET_PREFIX + 'logo.png';
-        splash.appendChild(logo);
-        logo.onload = function () {
-            splash.style.display = 'block';
-        };
+        var rotatingContainer = document.createElement('div');
+        rotatingContainer.className = 'rotating-container';
+        splash.appendChild(rotatingContainer);
 
-        var container = document.createElement('div');
-        container.id = 'progress-bar-container';
-        splash.appendChild(container);
+        // Функция генерации случайного цвета в формате hex
+        function getRandomColor() {
+            return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        }
 
-        var bar = document.createElement('div');
-        bar.id = 'progress-bar';
-        container.appendChild(bar);
-
+        for (var i = 0; i < 8; i++) {
+            var square = document.createElement('div');
+            square.className = 'rotating-square square' + i;
+            square.style.backgroundColor = getRandomColor();
+            rotatingContainer.appendChild(square);
+        }
     };
 
     var hideSplash = function () {
         var splash = document.getElementById('application-splash-wrapper');
-        splash.parentElement.removeChild(splash);
-    };
-
-    var setProgress = function (value) {
-        var bar = document.getElementById('progress-bar');
-        if (bar) {
-            value = Math.min(1, Math.max(0, value));
-            bar.style.width = value * 100 + '%';
-        }
+        if (splash) splash.remove();
     };
 
     var createCss = function () {
-        var css = [
-            'body {',
-            '    background-color: #283538;',
+        var cssParts = [
+            '* { box-sizing: border-box; padding: 0; margin: 0; }',
+            'html, body {',
+            '    width: 100%; height: 100%; margin: 0; padding: 0;',
+            '    background-color: #ffffff;',
             '}',
-
             '#application-splash-wrapper {',
-            '    position: absolute;',
-            '    top: 0;',
-            '    left: 0;',
-            '    height: 100%;',
-            '    width: 100%;',
-            '    background-color: #283538;',
+            '    position: fixed;',
+            '    top: 0; left: 0;',
+            '    width: 100vw; height: 100vh;',
+            '    display: flex; align-items: center; justify-content: center;',
+            '    background-color: #ffffff;',
             '}',
-
             '#application-splash {',
+            '    width: 50vw; height: 50vw;',
+            '    max-width: 600px; max-height: 600px;',
+            '    position: relative;',
+            '}',
+            '.rotating-container {',
+            '    width: 100%; height: 100%;',
+            '    position: relative;',
+            '    animation: rotate 5s linear infinite;',
+            '}',
+            '.rotating-square {',
             '    position: absolute;',
-            '    top: calc(50% - 28px);',
-            '    width: 264px;',
-            '    left: calc(50% - 132px);',
+            '    width: 10vw; height: 10vw;',
+            '    max-width: 120px; max-height: 120px;',
+            '    border-radius: 16px;',
+            // Убрана анимация яркости, чтобы не было затухания
+            '    opacity: 0.9;',
+            '    transform: translate(-50%, -50%);',
             '}',
+        ];
 
-            '#application-splash img {',
-            '    width: 100%;',
-            '}',
+        var centerX = 50;
+        var centerY = 50;
+        var radius = 40;
 
-            '#progress-bar-container {',
-            '    margin: 20px auto 0 auto;',
-            '    height: 2px;',
-            '    width: 100%;',
-            '    background-color: #1d292c;',
-            '}',
-
-            '#progress-bar {',
-            '    width: 0%;',
-            '    height: 100%;',
-            '    background-color: #f60;',
-            '}',
-            '@media (max-width: 480px) {',
-            '    #application-splash {',
-            '        width: 170px;',
-            '        left: calc(50% - 85px);',
-            '    }',
-            '}'
-
-        ].join('\n');
-
-        var style = document.createElement('style');
-        style.type = 'text/css';
-        if (style.styleSheet) {
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
+        for (var i = 0; i < 8; i++) {
+            var angle = (i * 360 / 8) * Math.PI / 180;
+            var x = centerX + radius * Math.cos(angle);
+            var y = centerY + radius * Math.sin(angle);
+            cssParts.push('.square' + i + ' { top: ' + y + '%; left: ' + x + '%; }');
         }
 
+        cssParts.push(
+            '@keyframes rotate {',
+            '    0% { transform: rotate(0deg); }',
+            '    100% { transform: rotate(360deg); }',
+            '}'
+        );
+
+        var css = cssParts.join('\n');
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.appendChild(document.createTextNode(css));
         document.head.appendChild(style);
     };
 
-
     createCss();
-
     showSplash();
 
-    app.on('preload:end', function () {
-        app.off('preload:progress');
-    });
-    app.on('preload:progress', setProgress);
     app.on('start', hideSplash);
 });
