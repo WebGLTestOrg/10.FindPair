@@ -1,11 +1,10 @@
 pc.script.createLoadingScreen(function (app) {
-    var appWrapper = document.getElementById('playcanvas-wrapper');
     var showSplash = function () {
         var wrapper = document.createElement('div');
         wrapper.id = 'application-splash-wrapper';
         wrapper.style.backgroundColor = '#ffffff';
 
-        appWrapper.appendChild(wrapper);
+        document.body.appendChild(wrapper);
 
         var splash = document.createElement('div');
         splash.id = 'application-splash';
@@ -41,14 +40,15 @@ pc.script.createLoadingScreen(function (app) {
             '    background-color: #ffffff;',
             '}',
             '#application-splash-wrapper {',
-            '    position: absolute;', // вместо fixed
+            '    position: fixed;',
             '    top: 0; left: 0;',
-            '    width: 100%; height: 100%;',
+            '    width: 100vw; height: 100vh;',
             '    display: flex; align-items: center; justify-content: center;',
             '    background-color: #ffffff;',
             '}',
             '#application-splash {',
-            '    width: 100%; height: 100%;',
+            '    width: 50vw; height: 50vw;',
+            '    max-width: 600px; max-height: 600px;',
             '    position: relative;',
             '}',
             '.rotating-container {',
