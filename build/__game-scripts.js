@@ -217,7 +217,6 @@ LevelManager.prototype.initialize = function () {
     this.btnOriginalScale = null;
 
     if (this.btn) {
-        console.log("Кнопка найдена: " + this.btn.name);
 
         if (this.btn.element) {
             this.btn.element.useInput = true;
@@ -226,7 +225,7 @@ LevelManager.prototype.initialize = function () {
                 this.click = {
                     type:"click",
                 }
-                console.log(this.click);
+                
 
                 // Инициализация анимации
                 this.animatingBtn = true;
@@ -261,7 +260,7 @@ LevelManager.prototype.update = function (dt) {
             // конец анимации
             this.animatingBtn = false;
             this.btn.setLocalScale(this.btnOriginalScale);
-            console.log("Анимация завершена");
+            console.log(this.click);
             return;
         }
 
