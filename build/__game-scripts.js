@@ -212,13 +212,18 @@ LevelManager.prototype.initialize = function () {
     this.nextCount = 0;
 
     this.btn = this.app.root.findByName("Btn");
-
+    console.log(this.btn);
     if (this.btn && this.btn.element) {
+        console.log(this.btn);
         // Включаем интерактивность
         this.btn.element.useInput = true;
         this.btn.element.interactable = true;
 
         console.log("Кнопка найдена: " + this.btn.name);
+
+        this.btn.button.on("click", function (e) {
+            console.log("Кнопка нажата: " + this.name);
+        }, this);
 
         this.btn.element.on("mousedown", function (e) {
             console.log("Кнопка нажата: " + this.name);
