@@ -211,17 +211,27 @@ LevelManager.prototype.initialize = function () {
     this.camera = this.app.root.findByName("Camera");
     this.nextCount = 0;
 
-    // Поиск кнопки Btn2
     this.btn = this.app.root.findByName("Btn2");
+    this.animatingBtn = false;
+    this.btnAnimationTime = 0;
+    this.btnOriginalScale = null;
+
     if (this.btn) {
         console.log("Кнопка найдена: " + this.btn.name);
 
-        // Включение пользовательского ввода
         if (this.btn.element) {
             this.btn.element.useInput = true;
 
             this.btn.element.on("mousedown", function (e) {
-                console.log("Кнопка нажата: " + this.btn.name);
+                this.click = {
+                    type:"click",
+                }
+                console.log(this.click);
+
+                // Инициализация анимации
+                this.animatingBtn = true;
+                this.btnAnimationTime = 0;
+                this.btnOriginalScale = this.btn.getLocalScale().clone();
             }, this);
         } else {
             console.warn("У кнопки нет компонента element");
@@ -231,6 +241,36 @@ LevelManager.prototype.initialize = function () {
     }
 
     this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.handleClick, this);
+};
+
+LevelManager.prototype.update = function (dt) {
+    // Анимация кнопки (scale ↓ и обратно)
+    if (this.animatingBtn && this.btn) {
+        this.btnAnimationTime += dt;
+
+        const duration = 0.3;
+        let scale = 1;
+
+        if (this.btnAnimationTime <= duration / 2) {
+            // scale down
+            scale = pc.math.lerp(1, 0.8, this.btnAnimationTime / (duration / 2));
+        } else if (this.btnAnimationTime <= duration) {
+            // scale up
+            scale = pc.math.lerp(0.8, 1, (this.btnAnimationTime - duration / 2) / (duration / 2));
+        } else {
+            // конец анимации
+            this.animatingBtn = false;
+            this.btn.setLocalScale(this.btnOriginalScale);
+            console.log("Анимация завершена");
+            return;
+        }
+
+        this.btn.setLocalScale(
+            this.btnOriginalScale.x * scale,
+            this.btnOriginalScale.y * scale,
+            this.btnOriginalScale.z
+        );
+    }
 };
 
 LevelManager.prototype.handleClick = function (e) {
@@ -283,6 +323,7 @@ LevelManager.prototype.handleClick = function (e) {
         }
     }
 };
+
 
 var ShakeOnSpaceScene = pc.createScript("shakeOnSpaceScene");
 ShakeOnSpaceScene.prototype.initialize = function () {
