@@ -212,9 +212,7 @@ LevelManager.prototype.initialize = function () {
     this.nextCount = 0;
 
     this.btn = this.app.root.findByName("Btn");
-    console.log(this.btn);
     if (this.btn && this.btn.element) {
-        console.log(this.btn);
         // Включаем интерактивность
         this.btn.element.useInput = true;
 
