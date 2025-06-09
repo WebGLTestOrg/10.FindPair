@@ -217,7 +217,6 @@ LevelManager.prototype.initialize = function () {
         console.log(this.btn);
         // Включаем интерактивность
         this.btn.element.useInput = true;
-        this.btn.element.interactable = true;
 
         console.log("Кнопка найдена: " + this.btn.name);
 
