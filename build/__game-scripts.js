@@ -221,7 +221,7 @@ LevelManager.prototype.initialize = function () {
         if (this.btn.element) {
             this.btn.element.useInput = true;
 
-            this.btn.element.on("mousedown", function (e) {
+            this.btn.element.on("click", function (e) {
                 this.click = {
                     type:"click",
                 }
