@@ -196,7 +196,7 @@ Cell.attributes.add("spriteObj", {
 var LevelManager = pc.createScript("levelManager");
 LevelManager.instance = null, LevelManager.prototype.initialize = function () {
     if (LevelManager.instance) return console.warn("LevelManager already exists"), void this.entity.destroy();
-    LevelManager.instance = this, this.currentLevel = 0, this.firstClickedCell = null, this.completed = !1, this.camera = this.app.root.findByName("Camera"), this.nextCount = 0, this.btn = this.app.root.findByName("Btn"), this.btn && this.btn.element && (this.btn.element.useInput = !0, this.btn.element.interactable = !0, console.log("Кнопка найдена: " + this.btn), this.btn.button.on("click", function (e) {
+    LevelManager.instance = this, this.currentLevel = 0, this.firstClickedCell = null, this.completed = !1, this.camera = this.app.root.findByName("Camera"), this.nextCount = 0, this.btn = this.app.root.findByName("Btn"), this.btn && this.btn.element && (this.btn.element.useInput = !0, this.btn.element.interactable = !0, console.log(this.btn), this.btn.button.on("click", function (e) {
         console.log("Нажата кнопка: ")
     }, this)), this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.handleClick, this)
 }, LevelManager.prototype.handleClick = function (e) {
