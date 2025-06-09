@@ -217,7 +217,7 @@ LevelManager.prototype.initialize = function () {
         this.btn.element.useInput = true;
 
         console.log("Кнопка найдена: " + this.btn.name);
-
+        console.log(this.btn);
         this.btn.button.on("click", function (e) {
             console.log("Кнопка нажата: " + this.name);
         }, this);
