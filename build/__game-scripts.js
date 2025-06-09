@@ -193,7 +193,65 @@ Cell.attributes.add("spriteObj", {
 }, Cell.prototype.show = function () {
     this.entity.enabled = !0, this.clicked = !0
 };
-var LevelManager = pc.createScript("levelManager"); LevelManager.instance = null, LevelManager.prototype.initialize = function () { if (LevelManager.instance) return console.warn("LevelManager already exists"), void this.entity.destroy(); LevelManager.instance = this, this.currentLevel = 0, this.firstClickedCell = null, this.completed = !1, this.camera = this.app.root.findByName("Camera"), this.nextCount = 0, this.btn = this.app.root.findByName("Btn"), this.btn && this.btn.element && (this.btn.element.useInput = !0, this.btn.element.interactable = !0, this.btn.button && this.btn.button.on("click", (e) => { console.log(`Clicked entity ${this.btn.name}`) })), this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.handleClick, this) }, LevelManager.prototype.handleClick = function (e) { if (this.completed) return; const t = this.camera.camera.screenToWorld(e.x, e.y, this.camera.camera.nearClip), i = this.camera.camera.screenToWorld(e.x, e.y, this.camera.camera.farClip), l = this.app.systems.rigidbody.raycastFirst(t, i); if (!l || !l.entity) return; const r = l.entity.script && l.entity.script.cell ? l.entity : l.entity.parent && l.entity.parent.script && l.entity.parent.script.cell ? l.entity.parent : null; if (!r) return; const n = r.script.cell; if (n.clicked) if (n.level === this.currentLevel) n.scale(), this.firstClickedCell ? (n.hide(), this.firstClickedCell.hide(), this.firstClickedCell = null, this.currentLevel++, this.nextCount >= 1 && this.currentLevel >= 5 && (this.currentLevel = 0, this.nextCount++), this.currentLevel >= 10 && (this.currentLevel = 0, this.nextCount++), this.nextCount >= 2 && (Logger.getInstance().completedGame(), ProgressBar.instance.isRunning = !1)) : this.firstClickedCell = n; else { if (this.firstClickedCell) { if (this.firstClickedCell.level === n.level) return; this.firstClickedCell.shake(), this.firstClickedCell = null } n.shake() } };
+var LevelManager = pc.createScript("levelManager");
+
+LevelManager.instance = null;
+
+LevelManager.prototype.initialize = function () {
+    // Проверка на дубликат
+    if (LevelManager.instance) {
+        console.warn("LevelManager already exists");
+        this.entity.destroy();
+        return;
+    }
+
+    LevelManager.instance = this;
+    this.currentLevel = 0;
+    this.firstClickedCell = null;
+    this.completed = false;
+    this.camera = this.app.root.findByName("Camera");
+    this.nextCount = 0;
+
+    // --- НАСТРОЙКА КНОПКИ ---
+    this.btn = this.app.root.findByName("Btn");
+    if (this.btn && this.btn.element && this.btn.button) {
+        // Включение ввода
+        this.btn.element.useInput = true;
+        this.btn.element.interactable = true;
+        this.btn.element.zIndex = 100;
+
+        // Подписка на событие клика
+        this.btn.button.on("click", () => {
+            console.log(`Clicked entity ${this.btn.name}`);
+        });
+        console.log("Кнопка найдена и настроена");
+    } else {
+        console.warn("Кнопка Btn не найдена или не имеет компонента button");
+    }
+
+    // --- НАЖАТИЕ МЫШИ (на 3D-сцене) ---
+    this.app.mouse.on(pc.EVENT_MOUSEDOWN, this.handleClick, this);
+};
+
+LevelManager.prototype.handleClick = function (e) {
+    if (this.completed) return;
+    const t = this.camera.camera.screenToWorld(e.x, e.y, this.camera.camera.nearClip),
+        i = this.camera.camera.screenToWorld(e.x, e.y, this.camera.camera.farClip),
+        l = this.app.systems.rigidbody.raycastFirst(t, i);
+    if (!l || !l.entity) return;
+    const r = l.entity.script && l.entity.script.cell ? l.entity : l.entity.parent && l.entity.parent.script && l.entity.parent.script.cell ? l.entity.parent : null;
+    if (!r) return;
+    const n = r.script.cell;
+    if (n.clicked)
+        if (n.level === this.currentLevel) n.scale(), this.firstClickedCell ? (n.hide(), this.firstClickedCell.hide(), this.firstClickedCell = null, this.currentLevel++, this.nextCount >= 1 && this.currentLevel >= 5 && (this.currentLevel = 0, this.nextCount++), this.currentLevel >= 10 && (this.currentLevel = 0, this.nextCount++), this.nextCount >= 2 && (Logger.getInstance().completedGame(), ProgressBar.instance.isRunning = !1)) : this.firstClickedCell = n;
+        else {
+            if (this.firstClickedCell) {
+                if (this.firstClickedCell.level === n.level) return;
+                this.firstClickedCell.shake(), this.firstClickedCell = null
+            }
+            n.shake()
+        }
+};
 var ShakeOnSpaceScene = pc.createScript("shakeOnSpaceScene");
 ShakeOnSpaceScene.prototype.initialize = function () {
     this.originalPos = this.entity.getLocalPosition().clone(), this.shakeDuration = 0
